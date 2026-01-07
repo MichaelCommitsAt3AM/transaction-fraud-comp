@@ -11,20 +11,25 @@ public class TransactionContext {
     // New coordinate fields for the *current* request
     private final double latitude;
     private final double longitude;
+    private final String location;
 
-    public TransactionContext(double amount, double currentBalance, List<Transaction> history, double latitude, double longitude) {
+
+    public TransactionContext(double amount, double currentBalance, List<Transaction> history, double latitude, double longitude, String location) {
         this.amount = amount;
         this.currentBalance = currentBalance;
         // Defensive copy
         this.history = new ArrayList<>(history);
         this.latitude = latitude;
         this.longitude = longitude;
+        this.location = location;
     }
 
     public double getAmount() { return amount; }
     public double getCurrentBalance() { return currentBalance; }
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
+    public String getLocation() { return location; }  // <- getter
+
 
     public List<Transaction> getHistory() {
         return Collections.unmodifiableList(history);

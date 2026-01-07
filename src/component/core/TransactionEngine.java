@@ -45,7 +45,7 @@ public class TransactionEngine implements ITransactionProcessor {
     }
 
     @Override
-    public TransactionResult processTransaction(double amount, TransactionType type, double lat, double lon) {
+    public TransactionResult processTransaction(double amount, TransactionType type, double lat, double lon, String location) {
         try {
             validateAmount(amount);
 
@@ -53,11 +53,11 @@ public class TransactionEngine implements ITransactionProcessor {
                 validateBalance(amount);
             }
 
-            // Pass real coordinates to the Context
-            TransactionContext context = new TransactionContext(amount, currentBalance, transactionHistory, lat, lon);
+            // Pass real coordinates and location to the Context
+            TransactionContext context = new TransactionContext(amount, currentBalance, transactionHistory, lat, lon, location);
             checkFraud(context);
 
-            executeTransaction(amount, type, lat, lon);
+            executeTransaction(amount, type, location, lat, lon);
 
             return new TransactionResult(TransactionStatus.SUCCESS, "Transaction Approved", currentBalance);
 
@@ -90,14 +90,14 @@ public class TransactionEngine implements ITransactionProcessor {
         }
     }
 
-    private void executeTransaction(double amount, TransactionType type, double lat, double lon) {
+    private void executeTransaction(double amount, TransactionType type, String location, double lat, double lon) {
         if (type == TransactionType.DEPOSIT) {
             currentBalance += amount;
         } else {
             currentBalance -= amount;
         }
-        // Store coordinates in history
-        transactionHistory.add(new Transaction(amount, type, lat, lon));
+        // Store coordinates and location in history
+        transactionHistory.add(new Transaction(amount, type, location, lat, lon));
         notifyApproved(amount, type);
     }
 
