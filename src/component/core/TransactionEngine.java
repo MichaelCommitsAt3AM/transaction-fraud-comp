@@ -34,7 +34,6 @@ public class TransactionEngine implements ITransactionProcessor {
         this.listeners.add(listener);
     }
 
-    // IMPROVEMENT: Allow removing listeners
     @Override
     public void removeTransactionListener(TransactionListener listener) {
         this.listeners.remove(listener);
@@ -46,7 +45,7 @@ public class TransactionEngine implements ITransactionProcessor {
     }
 
     @Override
-    public TransactionResult processTransaction(double amount, TransactionType type) {
+    public TransactionResult processTransaction(double amount, TransactionType type, double lat, double lon) {
         try {
             validateAmount(amount);
 
@@ -54,14 +53,15 @@ public class TransactionEngine implements ITransactionProcessor {
                 validateBalance(amount);
             }
 
-            TransactionContext context = new TransactionContext(amount, currentBalance, transactionHistory);
+            // Pass real coordinates to the Context
+            TransactionContext context = new TransactionContext(amount, currentBalance, transactionHistory, lat, lon);
             checkFraud(context);
 
-            executeTransaction(amount, type);
+            executeTransaction(amount, type, lat, lon);
 
             return new TransactionResult(TransactionStatus.SUCCESS, "Transaction Approved", currentBalance);
 
-        } catch (InsufficientBalanceException e) {
+        } catch (InsufficientBalanceException | InvalidAmountException e) {
             notifyDeclined(amount, e.getMessage());
             return new TransactionResult(TransactionStatus.DECLINED, e.getMessage(), currentBalance);
 
@@ -69,24 +69,17 @@ public class TransactionEngine implements ITransactionProcessor {
             notifyFraud(amount, e.getMessage());
             return new TransactionResult(TransactionStatus.FRAUD_DETECTED, e.getMessage(), currentBalance);
 
-        } catch (InvalidAmountException e) {
-            notifyDeclined(amount, e.getMessage());
-            return new TransactionResult(TransactionStatus.DECLINED, e.getMessage(), currentBalance);
         } catch (Exception e) {
             return new TransactionResult(TransactionStatus.ERROR, "System Error: " + e.getMessage(), currentBalance);
         }
     }
 
     private void validateAmount(double amount) throws InvalidAmountException {
-        if (amount <= 0) {
-            throw new InvalidAmountException("Amount must be positive");
-        }
+        if (amount <= 0) throw new InvalidAmountException("Amount must be positive");
     }
 
     private void validateBalance(double amount) throws InsufficientBalanceException {
-        if (amount > currentBalance) {
-            throw new InsufficientBalanceException("Insufficient funds");
-        }
+        if (amount > currentBalance) throw new InsufficientBalanceException("Insufficient funds");
     }
 
     private void checkFraud(TransactionContext context) throws FraudDetectedException {
@@ -97,40 +90,30 @@ public class TransactionEngine implements ITransactionProcessor {
         }
     }
 
-    private void executeTransaction(double amount, TransactionType type) {
+    private void executeTransaction(double amount, TransactionType type, double lat, double lon) {
         if (type == TransactionType.DEPOSIT) {
             currentBalance += amount;
         } else {
             currentBalance -= amount;
         }
-        transactionHistory.add(new Transaction(amount, type));
+        // Store coordinates in history
+        transactionHistory.add(new Transaction(amount, type, lat, lon));
         notifyApproved(amount, type);
     }
 
-    // --- Robust Event Dispatching (IMPROVEMENT 4) ---
-    private void notifyListeners(TransactionEvent event, java.util.function.BiConsumer<TransactionListener, TransactionEvent> action) {
-        for (TransactionListener listener : new ArrayList<>(listeners)) { // Iterate over copy to avoid ConcurrentModification
-            try {
-                action.accept(listener, event);
-            } catch (Exception e) {
-                System.err.println("[Component] Listener failed: " + e.getMessage());
-                // Don't rethrow, keep notifying others
-            }
-        }
-    }
-
+    // --- Event Helpers (Simplified) ---
     private void notifyApproved(double amount, TransactionType type) {
         TransactionApprovedEvent event = new TransactionApprovedEvent(amount, type, currentBalance);
-        notifyListeners(event, (l, e) -> l.onApproved((TransactionApprovedEvent) e));
+        listeners.forEach(l -> l.onApproved(event));
     }
 
     private void notifyDeclined(double amount, String reason) {
         TransactionDeclinedEvent event = new TransactionDeclinedEvent(amount, reason);
-        notifyListeners(event, (l, e) -> l.onDeclined((TransactionDeclinedEvent) e));
+        listeners.forEach(l -> l.onDeclined(event));
     }
 
     private void notifyFraud(double amount, String ruleName) {
         FraudDetectedEvent event = new FraudDetectedEvent(amount, ruleName);
-        notifyListeners(event, (l, e) -> l.onFraudDetected((FraudDetectedEvent) e));
+        listeners.forEach(l -> l.onFraudDetected(event));
     }
 }
