@@ -56,9 +56,7 @@ javac -d bin src/**/*.java
 java -cp bin Main
 ```
 
-
-## 🛠 Usage Guide
----
+## Usage Guide
 
 ### 1. Configuration
 Use the TransactionEngineFactory to create an instance of the processor. Provide initial balance, daily limit, fraud rules, and listeners:
@@ -143,5 +141,8 @@ A $300 withdrawal is flagged as fraud here, whereas it would be allowed in the B
 
 ---
 
-## 🚧 Project Status
+## Project Status
 The component is fully functional and tested with demo applications. It currently uses in-memory storage for transaction history.
+
+## License
+MIT License – free to use for educational purposes.
