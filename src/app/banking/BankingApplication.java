@@ -6,12 +6,12 @@ import component.rules.DailyLimitRule;
 import component.rules.LargeAmountRule;
 
 public class BankingApplication {
-    
+
     private final TransactionEngine transactionEngine;
 
     public BankingApplication() {
         // 1. Instantiate the Component (Initial Balance: $1000, Daily Limit Field: $5000)
-        // Note: The daily limit field in constructor is for the internal check, 
+        // Note: The daily limit field in constructor is for the internal check,
         // but we also add a Rule for strict enforcement.
         this.transactionEngine = new TransactionEngine(1000.00, 5000.00);
 
@@ -23,7 +23,7 @@ public class BankingApplication {
         this.transactionEngine.addFraudRule(new LargeAmountRule(2000.00));
         // Bank allows $5000 total per day
         this.transactionEngine.addFraudRule(new DailyLimitRule(5000.00));
-        
+
         System.out.println("--- Banking App Initialized (Balance: $1000) ---");
     }
 

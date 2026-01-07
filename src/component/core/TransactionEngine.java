@@ -69,7 +69,7 @@ public class TransactionEngine implements ITransactionProcessor {
     }
 
     // --- Internal Helper Methods ---
-    
+
     private void validateAmount(double amount) throws InvalidAmountException {
         if (amount <= 0) {
             throw new InvalidAmountException("Amount must be positive");
@@ -96,10 +96,10 @@ public class TransactionEngine implements ITransactionProcessor {
         } else {
             currentBalance -= amount;
         }
-        
+
         // Record history
         transactionHistory.add(new Transaction(amount, type));
-        
+
         // Fire Success Event
         notifyApproved(amount, type);
     }

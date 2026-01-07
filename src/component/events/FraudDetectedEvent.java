@@ -9,7 +9,7 @@ public class FraudDetectedEvent extends TransactionEvent {
     }
 
     public String getFlagReason() { return flagReason; }
-    
+
     @Override
     public String toString() {
         return "FRAUD ALERT: Transaction of $" + getAmount() + " flagged. Rule: " + flagReason;

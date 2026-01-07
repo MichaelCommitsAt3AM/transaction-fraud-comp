@@ -9,7 +9,7 @@ public class TransactionDeclinedEvent extends TransactionEvent {
     }
 
     public String getReason() { return reason; }
-    
+
     @Override
     public String toString() {
         return "DECLINED: $" + getAmount() + ". Reason: " + reason;
