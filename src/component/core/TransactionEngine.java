@@ -3,17 +3,17 @@ package component.core;
 import component.api.*;
 import component.events.*;
 import component.exceptions.*;
+import component.model.TransactionResult;
+import component.model.TransactionStatus;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class TransactionEngine implements ITransactionProcessor {
 
-    // Internal State (Encapsulated)
     private double currentBalance;
     private double dailyLimit;
     private List<Transaction> transactionHistory;
-
-    // Pluggable Dependencies
     private List<IFraudRule> fraudRules;
     private List<TransactionListener> listeners;
 
@@ -25,7 +25,6 @@ public class TransactionEngine implements ITransactionProcessor {
         this.listeners = new ArrayList<>();
     }
 
-    // --- Configuration Methods ---
     public void addFraudRule(IFraudRule rule) {
         this.fraudRules.add(rule);
     }
@@ -35,40 +34,48 @@ public class TransactionEngine implements ITransactionProcessor {
         this.listeners.add(listener);
     }
 
+    // IMPROVEMENT: Allow removing listeners
+    @Override
+    public void removeTransactionListener(TransactionListener listener) {
+        this.listeners.remove(listener);
+    }
+
     @Override
     public double getCurrentBalance() {
         return this.currentBalance;
     }
 
-    // --- Core Logic ---
     @Override
-    public void processTransaction(double amount, TransactionType type) {
+    public TransactionResult processTransaction(double amount, TransactionType type) {
         try {
-            // 1. Basic Validation
             validateAmount(amount);
 
-            // 2. Business Logic Validation (Balance Check)
             if (type == TransactionType.WITHDRAWAL) {
                 validateBalance(amount);
             }
 
-            // 3. Fraud Detection (The Strategy Pattern)
             TransactionContext context = new TransactionContext(amount, currentBalance, transactionHistory);
             checkFraud(context);
 
-            // 4. Execution (If we get here, everything is valid)
             executeTransaction(amount, type);
+
+            return new TransactionResult(TransactionStatus.SUCCESS, "Transaction Approved", currentBalance);
 
         } catch (InsufficientBalanceException e) {
             notifyDeclined(amount, e.getMessage());
+            return new TransactionResult(TransactionStatus.DECLINED, e.getMessage(), currentBalance);
+
         } catch (FraudDetectedException e) {
             notifyFraud(amount, e.getMessage());
+            return new TransactionResult(TransactionStatus.FRAUD_DETECTED, e.getMessage(), currentBalance);
+
         } catch (InvalidAmountException e) {
-            notifyDeclined(amount, e.getMessage()); // Treat invalid input as declined
+            notifyDeclined(amount, e.getMessage());
+            return new TransactionResult(TransactionStatus.DECLINED, e.getMessage(), currentBalance);
+        } catch (Exception e) {
+            return new TransactionResult(TransactionStatus.ERROR, "System Error: " + e.getMessage(), currentBalance);
         }
     }
-
-    // --- Internal Helper Methods ---
 
     private void validateAmount(double amount) throws InvalidAmountException {
         if (amount <= 0) {
@@ -78,14 +85,14 @@ public class TransactionEngine implements ITransactionProcessor {
 
     private void validateBalance(double amount) throws InsufficientBalanceException {
         if (amount > currentBalance) {
-            throw new InsufficientBalanceException("Insufficient funds. Available: " + currentBalance);
+            throw new InsufficientBalanceException("Insufficient funds");
         }
     }
 
     private void checkFraud(TransactionContext context) throws FraudDetectedException {
         for (IFraudRule rule : fraudRules) {
             if (rule.isFraudulent(context)) {
-                throw new FraudDetectedException("Fraud detected by: " + rule.getRuleName());
+                throw new FraudDetectedException(rule.getRuleName());
             }
         }
     }
@@ -96,28 +103,34 @@ public class TransactionEngine implements ITransactionProcessor {
         } else {
             currentBalance -= amount;
         }
-
-        // Record history
         transactionHistory.add(new Transaction(amount, type));
-
-        // Fire Success Event
         notifyApproved(amount, type);
     }
 
-    // --- Event Firing Methods ---
+    // --- Robust Event Dispatching (IMPROVEMENT 4) ---
+    private void notifyListeners(TransactionEvent event, java.util.function.BiConsumer<TransactionListener, TransactionEvent> action) {
+        for (TransactionListener listener : new ArrayList<>(listeners)) { // Iterate over copy to avoid ConcurrentModification
+            try {
+                action.accept(listener, event);
+            } catch (Exception e) {
+                System.err.println("[Component] Listener failed: " + e.getMessage());
+                // Don't rethrow, keep notifying others
+            }
+        }
+    }
 
     private void notifyApproved(double amount, TransactionType type) {
         TransactionApprovedEvent event = new TransactionApprovedEvent(amount, type, currentBalance);
-        for (TransactionListener listener : listeners) listener.onApproved(event);
+        notifyListeners(event, (l, e) -> l.onApproved((TransactionApprovedEvent) e));
     }
 
     private void notifyDeclined(double amount, String reason) {
         TransactionDeclinedEvent event = new TransactionDeclinedEvent(amount, reason);
-        for (TransactionListener listener : listeners) listener.onDeclined(event);
+        notifyListeners(event, (l, e) -> l.onDeclined((TransactionDeclinedEvent) e));
     }
 
     private void notifyFraud(double amount, String ruleName) {
         FraudDetectedEvent event = new FraudDetectedEvent(amount, ruleName);
-        for (TransactionListener listener : listeners) listener.onFraudDetected(event);
+        notifyListeners(event, (l, e) -> l.onFraudDetected((FraudDetectedEvent) e));
     }
 }
