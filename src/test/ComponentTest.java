@@ -7,6 +7,8 @@ import component.model.TransactionResult;
 import component.model.TransactionStatus;
 import component.rules.LargeAmountRule;
 
+import java.util.List;
+
 public class ComponentTest {
 
     public static void main(String[] args) {
@@ -20,23 +22,29 @@ public class ComponentTest {
     }
 
     private static boolean testDeposit() {
-        ITransactionProcessor engine = TransactionEngineFactory.createEngine(0, 1000);
+        ITransactionProcessor engine = TransactionEngineFactory.createConfiguredEngine(0, 1000, null, null);
         TransactionResult result = engine.processTransaction(100.0, TransactionType.DEPOSIT);
         return result.getStatus() == TransactionStatus.SUCCESS && engine.getCurrentBalance() == 100.0;
     }
 
     private static boolean testInsufficientFunds() {
-        ITransactionProcessor engine = TransactionEngineFactory.createEngine(50, 1000);
+        ITransactionProcessor engine = TransactionEngineFactory.createConfiguredEngine(50, 1000, null, null);
         TransactionResult result = engine.processTransaction(100.0, TransactionType.WITHDRAWAL);
         return result.getStatus() == TransactionStatus.DECLINED;
     }
 
     private static boolean testFraudDetection() {
-        // Create engine manually to inject rule easily
-        component.core.TransactionEngine engine = new component.core.TransactionEngine(1000, 5000);
-        engine.addFraudRule(new LargeAmountRule(500));
+        ITransactionProcessor engine =
+                TransactionEngineFactory.createConfiguredEngine(
+                        1000,
+                        5000,
+                        List.of(new LargeAmountRule(500)),
+                        null
+                );
 
-        TransactionResult result = engine.processTransaction(600.0, TransactionType.WITHDRAWAL);
+        TransactionResult result =
+                engine.processTransaction(600.0, TransactionType.WITHDRAWAL);
+
         return result.getStatus() == TransactionStatus.FRAUD_DETECTED;
     }
 }
