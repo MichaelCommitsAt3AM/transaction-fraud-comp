@@ -45,7 +45,10 @@ public class TransactionEngine implements ITransactionProcessor {
     }
 
     @Override
-    public TransactionResult processTransaction(double amount, TransactionType type, double lat, double lon, String location) {
+    public TransactionResult processTransaction(double amount, TransactionType type, double lat, double lon) {
+        // Generate a location string from the coordinates since the parameter was removed
+        String location = String.format("%.4f, %.4f", lat, lon);
+
         try {
             validateAmount(amount);
 
@@ -53,7 +56,7 @@ public class TransactionEngine implements ITransactionProcessor {
                 validateBalance(amount);
             }
 
-            // Pass real coordinates and location to the Context
+            // Pass real coordinates and the generated location string to the Context
             TransactionContext context = new TransactionContext(amount, currentBalance, transactionHistory, lat, lon, location);
             checkFraud(context);
 

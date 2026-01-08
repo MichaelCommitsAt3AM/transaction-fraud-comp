@@ -6,14 +6,13 @@ import component.model.TransactionResult;
 public interface ITransactionProcessor {
 
     /**
-     * Processes a transaction with geolocation data and location string.
+     * Processes a transaction with geolocation data.
      * @param amount Transaction amount
      * @param type DEPOSIT or WITHDRAWAL
      * @param lat Latitude
      * @param lon Longitude
-     * @param location Human-readable location (e.g., city)
      */
-    TransactionResult processTransaction(double amount, TransactionType type, double lat, double lon, String location);
+    TransactionResult processTransaction(double amount, TransactionType type, double lat, double lon);
 
     double getCurrentBalance();
     void addTransactionListener(TransactionListener listener);
