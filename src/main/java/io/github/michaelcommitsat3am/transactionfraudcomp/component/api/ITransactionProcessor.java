@@ -4,7 +4,8 @@ import io.github.michaelcommitsat3am.transactionfraudcomp.component.core.Transac
 import io.github.michaelcommitsat3am.transactionfraudcomp.component.model.TransactionResult;
 
 public interface ITransactionProcessor {
-    TransactionResult processTransaction(String userId, double amount, TransactionType type,
+    // Added authToken parameter
+    TransactionResult processTransaction(String authToken, String userId, double amount, TransactionType type,
                                          double lat, double lon, String deviceId, String ip);
 
     double getCurrentBalance();

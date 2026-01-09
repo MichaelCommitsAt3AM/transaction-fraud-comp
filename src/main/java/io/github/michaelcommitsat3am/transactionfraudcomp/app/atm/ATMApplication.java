@@ -8,6 +8,7 @@ import io.github.michaelcommitsat3am.transactionfraudcomp.component.persistence.
 import io.github.michaelcommitsat3am.transactionfraudcomp.component.rules.*;
 import io.github.michaelcommitsat3am.transactionfraudcomp.component.api.TransactionListener;
 import io.github.michaelcommitsat3am.transactionfraudcomp.component.events.*;
+import io.github.michaelcommitsat3am.transactionfraudcomp.component.model.TransactionResult;
 import java.util.List;
 
 public class ATMApplication {
@@ -24,20 +25,27 @@ public class ATMApplication {
                 List.of(
                         new LargeAmountRule(200.00),
                         new VelocityRule(3, 60),
-                        new CardTestingRule()
-                ),
+                        new CardTestingRule()),
                 List.of(new TransactionListener() {
-                    public void onApproved(TransactionApprovedEvent e) { System.out.println("[ATM] Dispensing Cash..."); }
-                    public void onDeclined(TransactionDeclinedEvent e) { System.out.println("[ATM] Canceled: " + e.getReason()); }
-                    public void onFraudDetected(FraudDetectedEvent e) { System.out.println("[ATM] 🚨 CARD RETAINED."); }
-                })
-        );
+                    public void onApproved(TransactionApprovedEvent e) {
+                        System.out.println("[ATM] Dispensing Cash...");
+                    }
+
+                    public void onDeclined(TransactionDeclinedEvent e) {
+                        System.out.println("[ATM] Canceled: " + e.getReason());
+                    }
+
+                    public void onFraudDetected(FraudDetectedEvent e) {
+                        System.out.println("[ATM] 🚨 CARD RETAINED.");
+                    }
+                }));
         System.out.println("--- ATM System Initialized ---");
     }
 
     public void withdrawCash(String userId, double amount, double lat, double lon, String deviceId, String ip) {
         System.out.printf("\n[ATM] Withdrawal: $%.2f at [%.4f, %.4f]%n", amount, lat, lon);
-        var result = engine.processTransaction(userId, amount, TransactionType.WITHDRAWAL, lat, lon, deviceId, ip);
+        TransactionResult result = engine.processTransaction(null, userId, amount, TransactionType.WITHDRAWAL, lat, lon,
+                deviceId, ip);
 
         if (!result.isSuccess()) {
             System.out.println("[ATM Display] " + result.getMessage());

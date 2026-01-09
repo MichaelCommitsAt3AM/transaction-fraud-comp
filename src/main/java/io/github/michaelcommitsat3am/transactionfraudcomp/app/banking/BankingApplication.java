@@ -17,27 +17,26 @@ public class BankingApplication {
         this.transactionProcessor = TransactionEngineFactory.createConfiguredEngine(
                 1000.00,
                 5000.00,
-                repo,   // New dependency
-                cache,  // New dependency
+                repo, // New dependency
+                cache, // New dependency
                 List.of(
                         new LargeAmountRule(2000.00),
                         new DailyLimitRule(5000.00),
                         new ImpossibleTravelRule(),
-                        new SpendingAnomalyRule(3.0)
-                ),
-                List.of(new BankingEventHandler())
-        );
+                        new SpendingAnomalyRule(3.0)),
+                List.of(new BankingEventHandler()));
         System.out.println("--- Banking App Initialized (Balance: $1000) ---");
     }
 
     // Updated methods to accept metadata
     public void deposit(String userId, double amount, double lat, double lon, String deviceId, String ip) {
         System.out.printf("\nRequesting Deposit: %.2f for %s%n", amount, userId);
-        transactionProcessor.processTransaction(userId, amount, TransactionType.DEPOSIT, lat, lon, deviceId, ip);
+        transactionProcessor.processTransaction(null, userId, amount, TransactionType.DEPOSIT, lat, lon, deviceId, ip);
     }
 
     public void withdraw(String userId, double amount, double lat, double lon, String deviceId, String ip) {
         System.out.printf("\nRequesting Withdrawal: %.2f for %s%n", amount, userId);
-        transactionProcessor.processTransaction(userId, amount, TransactionType.WITHDRAWAL, lat, lon, deviceId, ip);
+        transactionProcessor.processTransaction(null, userId, amount, TransactionType.WITHDRAWAL, lat, lon, deviceId,
+                ip);
     }
 }

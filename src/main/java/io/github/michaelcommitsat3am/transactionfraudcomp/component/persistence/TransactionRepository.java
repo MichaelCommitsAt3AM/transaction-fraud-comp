@@ -14,12 +14,50 @@ public class TransactionRepository {
         this.dataSource = dataSource;
     }
 
-    public void saveTransaction(Transaction t) {
+    public Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
+    }
+
+    /**
+     * Fetches the current balance and LOCKS the row to prevent concurrent updates.
+     * Uses "SELECT ... FOR UPDATE"
+     */
+    public double getBalanceForUpdate(Connection conn, String userId) throws SQLException {
+        String sql = "SELECT balance FROM accounts WHERE user_id = ? FOR UPDATE";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble("balance");
+                } else {
+                    // Create account on the fly if it doesn't exist (or throw exception)
+                    createAccount(conn, userId);
+                    return 0.0;
+                }
+            }
+        }
+    }
+
+    private void createAccount(Connection conn, String userId) throws SQLException {
+        String sql = "INSERT INTO accounts (user_id, balance) VALUES (?, 0.00)";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    public void updateBalance(Connection conn, String userId, double newBalance) throws SQLException {
+        String sql = "UPDATE accounts SET balance = ? WHERE user_id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDouble(1, newBalance);
+            ps.setString(2, userId);
+            ps.executeUpdate();
+        }
+    }
+
+    public void saveTransaction(Connection conn, Transaction t) throws SQLException {
         String sql = "INSERT INTO transactions (transaction_id, user_id, amount, timestamp, location, lat, lon, device_id, ip_address, merchant_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, t.getTransactionId());
             ps.setString(2, t.getUserId());
             ps.setDouble(3, t.getAmount());
@@ -30,10 +68,7 @@ public class TransactionRepository {
             ps.setString(8, t.getDeviceId());
             ps.setString(9, t.getIpAddress());
             ps.setString(10, t.getMerchantType());
-
             ps.executeUpdate();
-        } catch (SQLException e) {
-            System.err.println("DB Error saving transaction: " + e.getMessage());
         }
     }
 

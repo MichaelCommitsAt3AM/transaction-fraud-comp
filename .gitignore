@@ -8,7 +8,8 @@
 *.log
 
 # Local configuration
-/src/main/resources/config.properties
+src/main/resources/config.properties
+
 
 # OS files
 .DS_Store

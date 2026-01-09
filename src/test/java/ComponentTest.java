@@ -1,5 +1,3 @@
-package io.github.michaelcommitsat3am.transactionfraudcomp.test;
-
 import io.github.michaelcommitsat3am.transactionfraudcomp.component.api.ITransactionProcessor;
 import io.github.michaelcommitsat3am.transactionfraudcomp.component.core.Transaction;
 import io.github.michaelcommitsat3am.transactionfraudcomp.component.core.TransactionType;
@@ -11,6 +9,7 @@ import io.github.michaelcommitsat3am.transactionfraudcomp.component.persistence.
 import io.github.michaelcommitsat3am.transactionfraudcomp.component.rules.ImpossibleTravelRule;
 import io.github.michaelcommitsat3am.transactionfraudcomp.component.rules.LargeAmountRule;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -41,9 +40,10 @@ public class ComponentTest {
     private static TransactionRepository createMockRepo() {
         return new TransactionRepository(null) {
             @Override
-            public void saveTransaction(Transaction t) {
+            public void saveTransaction(Connection conn, Transaction t) {
                 // No-op: Do not hit the database
             }
+
             @Override
             public List<Transaction> getHistoryByUser(String userId, int limit) {
                 return Collections.emptyList();
@@ -82,14 +82,12 @@ public class ComponentTest {
                 createMockRepo(),
                 createMockCache(),
                 null,
-                null
-        );
+                null);
 
         // Action: Deposit $100
         TransactionResult result = engine.processTransaction(
-                TEST_USER, 100.0, TransactionType.DEPOSIT,
-                40.7128, -74.0060, TEST_DEVICE, TEST_IP
-        );
+                null, TEST_USER, 100.0, TransactionType.DEPOSIT,
+                40.7128, -74.0060, TEST_DEVICE, TEST_IP);
 
         // Assert
         return result.getStatus() == TransactionStatus.SUCCESS && engine.getCurrentBalance() == 100.0;
@@ -103,14 +101,12 @@ public class ComponentTest {
                 createMockRepo(),
                 createMockCache(),
                 null,
-                null
-        );
+                null);
 
         // Action: Withdraw $100 (Exceeds balance)
         TransactionResult result = engine.processTransaction(
-                TEST_USER, 100.0, TransactionType.WITHDRAWAL,
-                40.7128, -74.0060, TEST_DEVICE, TEST_IP
-        );
+                null, TEST_USER, 100.0, TransactionType.WITHDRAWAL,
+                40.7128, -74.0060, TEST_DEVICE, TEST_IP);
 
         // Assert
         return result.getStatus() == TransactionStatus.DECLINED;
@@ -124,14 +120,12 @@ public class ComponentTest {
                 createMockRepo(),
                 createMockCache(),
                 List.of(new LargeAmountRule(500)),
-                null
-        );
+                null);
 
         // Action: Withdraw $600 (Exceeds rule)
         TransactionResult result = engine.processTransaction(
-                TEST_USER, 600.0, TransactionType.WITHDRAWAL,
-                40.7128, -74.0060, TEST_DEVICE, TEST_IP
-        );
+                null, TEST_USER, 600.0, TransactionType.WITHDRAWAL,
+                40.7128, -74.0060, TEST_DEVICE, TEST_IP);
 
         // Assert
         return result.getStatus() == TransactionStatus.FRAUD_DETECTED;
@@ -139,27 +133,25 @@ public class ComponentTest {
 
     private static boolean testImpossibleTravel() {
         // Setup: Impossible Travel Rule
-        // IMPORTANT: We use the In-Memory Mock Cache so the second transaction "sees" the first one.
+        // IMPORTANT: We use the In-Memory Mock Cache so the second transaction "sees"
+        // the first one.
         ITransactionProcessor engine = TransactionEngineFactory.createConfiguredEngine(
                 1000,
                 5000,
                 createMockRepo(),
                 createMockCache(), // <--- Stores history
                 List.of(new ImpossibleTravelRule()),
-                null
-        );
+                null);
 
         // Action 1: Transaction in New York (Should Succeed)
         engine.processTransaction(
-                TEST_USER, 100.0, TransactionType.WITHDRAWAL,
-                40.7128, -74.0060, TEST_DEVICE, TEST_IP
-        );
+                null, TEST_USER, 100.0, TransactionType.WITHDRAWAL,
+                40.7128, -74.0060, TEST_DEVICE, TEST_IP);
 
         // Action 2: Transaction in London immediately after (Should Fail)
         TransactionResult result = engine.processTransaction(
-                TEST_USER, 100.0, TransactionType.WITHDRAWAL,
-                51.5074, -0.1278, TEST_DEVICE, TEST_IP
-        );
+                null, TEST_USER, 100.0, TransactionType.WITHDRAWAL,
+                51.5074, -0.1278, TEST_DEVICE, TEST_IP);
 
         // Assert
         return result.getStatus() == TransactionStatus.FRAUD_DETECTED;
