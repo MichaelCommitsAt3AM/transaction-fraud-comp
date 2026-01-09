@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="io.github.michaelcommitsat3am.transactionfraudcomp.gui.controller.MainController"
+            stylesheets="@../css/styles.css"
+            prefWidth="1200" prefHeight="800">
+    
+    <!-- Left Sidebar Navigation -->
+    <left>
+        <VBox styleClass="sidebar" spacing="10" prefWidth="200">
+            <padding>
+                <Insets top="20" right="10" bottom="20" left="10"/>
+            </padding>
+            
+            <!-- App Title -->
+            <Label text="Transaction Fraud" styleClass="label-subtitle" wrapText="true"/>
+            <Separator/>
+            
+            <!-- Navigation Buttons -->
+            <Button fx:id="dashboardBtn" text="📊 Dashboard" styleClass="nav-button" 
+                    onAction="#showDashboard" maxWidth="Infinity"/>
+            
+            <Button fx:id="metricsBtn" text="📈 Metrics" styleClass="nav-button" 
+                    onAction="#showMetrics" maxWidth="Infinity"/>
+            
+            <Button fx:id="historyBtn" text="📜 History" styleClass="nav-button" 
+                    onAction="#showHistory" maxWidth="Infinity"/>
+            
+            <Region VBox.vgrow="ALWAYS"/>
+            
+            <!-- Status Indicator -->
+            <VBox spacing="5">
+                <Label text="System Status:" styleClass="label-secondary"/>
+                <Label fx:id="systemStatusLabel" text="⚫ Initializing..." styleClass="label-muted"/>
+            </VBox>
+        </VBox>
+    </left>
+    
+    <!-- Center Content Area -->
+    <center>
+        <StackPane fx:id="contentArea" styleClass="content-area">
+            <!-- Views will be loaded here dynamically -->
+        </StackPane>
+    </center>
+    
+</BorderPane>

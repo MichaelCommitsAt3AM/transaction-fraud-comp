@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.control.cell.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="io.github.michaelcommitsat3am.transactionfraudcomp.gui.controller.HistoryController"
+      spacing="20" styleClass="content-area">
+    
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    
+    <!-- Title and Controls -->
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <Label text="Transaction History" styleClass="label-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="🔄 Refresh" onAction="#handleRefresh"/>
+    </HBox>
+    
+    <!-- Table View -->
+    <TableView fx:id="historyTable" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="idColumn" text="Transaction ID" prefWidth="150">
+                <cellValueFactory>
+                    <PropertyValueFactory property="transactionId"/>
+                </cellValueFactory>
+            </TableColumn>
+            
+            <TableColumn fx:id="userColumn" text="User" prefWidth="150">
+                <cellValueFactory>
+                    <PropertyValueFactory property="userId"/>
+                </cellValueFactory>
+            </TableColumn>
+            
+            <TableColumn fx:id="typeColumn" text="Type" prefWidth="100">
+                <cellValueFactory>
+                    <PropertyValueFactory property="type"/>
+                </cellValueFactory>
+            </TableColumn>
+            
+            <TableColumn fx:id="amountColumn" text="Amount" prefWidth="100">
+                <cellValueFactory>
+                    <PropertyValueFactory property="amount"/>
+                </cellValueFactory>
+            </TableColumn>
+            
+            <TableColumn fx:id="locationColumn" text="Location" prefWidth="150">
+                <cellValueFactory>
+                    <PropertyValueFactory property="location"/>
+                </cellValueFactory>
+            </TableColumn>
+            
+            <TableColumn fx:id="statusColumn" text="Status" prefWidth="100">
+                <cellValueFactory>
+                    <PropertyValueFactory property="status"/>
+                </cellValueFactory>
+            </TableColumn>
+            
+            <TableColumn fx:id="timestampColumn" text="Timestamp" prefWidth="180">
+                <cellValueFactory>
+                    <PropertyValueFactory property="timestamp"/>
+                </cellValueFactory>
+            </TableColumn>
+        </columns>
+        
+        <placeholder>
+            <Label text="No transactions found. Start processing transactions to see history." 
+                   styleClass="label-secondary"/>
+        </placeholder>
+    </TableView>
+    
+    <!-- Loading Indicator -->
+    <HBox spacing="10" alignment="CENTER">
+        <ProgressIndicator fx:id="loadingIndicator" visible="false" maxWidth="30" maxHeight="30"/>
+        <Label fx:id="statusLabel" text="" styleClass="label-secondary"/>
+    </HBox>
+    
+</VBox>

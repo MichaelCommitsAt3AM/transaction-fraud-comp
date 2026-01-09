@@ -1,0 +1,316 @@
+/* ===================================
+   Transaction Fraud Component GUI
+   Dark Mode Theme Stylesheet
+   =================================== */
+
+/* === Root Color Palette === */
+.root {
+    /* Background Colors */
+    -fx-background-primary: #1e1e1e;
+    -fx-background-secondary: #2d2d2d;
+    -fx-background-tertiary: #3a3a3a;
+    
+    /* Accent Colors */
+    -fx-accent-blue: #007bff;
+    -fx-accent-blue-hover: #0056b3;
+    -fx-success-green: #28a745;
+    -fx-fraud-red: #dc3545;
+    -fx-warning-yellow: #ffc107;
+    
+    /* Text Colors */
+    -fx-text-primary: #e0e0e0;
+    -fx-text-secondary: #b0b0b0;
+    -fx-text-muted: #808080;
+    
+    /* Border Radius */
+    -fx-border-radius-standard: 8px;
+}
+
+/* === General Application Styling === */
+.root {
+    -fx-background-color: -fx-background-primary;
+    -fx-font-family: "Segoe UI", "Roboto", "Helvetica", sans-serif;
+    -fx-font-size: 14px;
+}
+
+/* === Labels === */
+.label {
+    -fx-text-fill: -fx-text-primary;
+}
+
+.label-secondary {
+    -fx-text-fill: -fx-text-secondary;
+}
+
+.label-muted {
+    -fx-text-fill: -fx-text-muted;
+}
+
+.label-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-primary;
+}
+
+.label-subtitle {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -fx-text-primary;
+}
+
+/* === Buttons === */
+.button {
+    -fx-background-color: -fx-accent-blue;
+    -fx-text-fill: white;
+    -fx-background-radius: -fx-border-radius-standard;
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+    -fx-font-weight: bold;
+}
+
+.button:hover {
+    -fx-background-color: -fx-accent-blue-hover;
+    -fx-scale-y: 1.05;
+    -fx-scale-x: 1.05;
+}
+
+.button:pressed {
+    -fx-background-color: #003d7a;
+}
+
+.button-success {
+    -fx-background-color: -fx-success-green;
+}
+
+.button-success:hover {
+    -fx-background-color: #1e7e34;
+}
+
+.button-danger {
+    -fx-background-color: -fx-fraud-red;
+}
+
+.button-danger:hover {
+    -fx-background-color: #c82333;
+}
+
+/* === Navigation Buttons === */
+.nav-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-secondary;
+    -fx-background-radius: -fx-border-radius-standard;
+    -fx-padding: 15px 20px;
+    -fx-font-size: 16px;
+    -fx-cursor: hand;
+    -fx-border-color: transparent;
+}
+
+.nav-button:hover {
+    -fx-background-color: -fx-background-tertiary;
+    -fx-text-fill: -fx-text-primary;
+}
+
+.nav-button-active {
+    -fx-background-color: -fx-accent-blue;
+    -fx-text-fill: white;
+}
+
+/* === Text Fields === */
+.text-field {
+    -fx-background-color: -fx-background-secondary;
+    -fx-text-fill: -fx-text-primary;
+    -fx-background-radius: -fx-border-radius-standard;
+    -fx-padding: 10px;
+    -fx-border-color: -fx-background-tertiary;
+    -fx-border-radius: -fx-border-radius-standard;
+    -fx-border-width: 2px;
+}
+
+.text-field:focused {
+    -fx-border-color: -fx-accent-blue;
+    -fx-background-color: -fx-background-tertiary;
+}
+
+/* === Toggle Buttons === */
+.toggle-button {
+    -fx-background-color: -fx-background-secondary;
+    -fx-text-fill: -fx-text-primary;
+    -fx-background-radius: -fx-border-radius-standard;
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+}
+
+.toggle-button:selected {
+    -fx-background-color: -fx-accent-blue;
+    -fx-text-fill: white;
+}
+
+.toggle-button:hover {
+    -fx-background-color: -fx-background-tertiary;
+}
+
+/* === Sliders === */
+.slider .track {
+    -fx-background-color: -fx-background-tertiary;
+}
+
+.slider .thumb {
+    -fx-background-color: -fx-accent-blue;
+}
+
+.slider .thumb:hover {
+    -fx-background-color: -fx-accent-blue-hover;
+}
+
+/* === Table View === */
+.table-view {
+    -fx-background-color: -fx-background-secondary;
+    -fx-border-color: -fx-background-tertiary;
+    -fx-border-radius: -fx-border-radius-standard;
+    -fx-background-radius: -fx-border-radius-standard;
+}
+
+.table-view .column-header {
+    -fx-background-color: -fx-background-tertiary;
+    -fx-text-fill: -fx-text-primary;
+    -fx-font-weight: bold;
+}
+
+.table-view .table-cell {
+    -fx-text-fill: -fx-text-primary;
+    -fx-background-color: -fx-background-secondary;
+    -fx-padding: 8px;
+}
+
+.table-row-cell {
+    -fx-background-color: -fx-background-secondary;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: derive(-fx-background-secondary, 5%);
+}
+
+.table-row-cell:selected {
+    -fx-background-color: -fx-accent-blue;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: -fx-background-tertiary;
+}
+
+/* === Custom Status Row Colors === */
+.table-row-success {
+    -fx-background-color: derive(-fx-success-green, -70%);
+}
+
+.table-row-fraud {
+    -fx-background-color: derive(-fx-fraud-red, -70%);
+}
+
+.table-row-declined {
+    -fx-background-color: derive(-fx-warning-yellow, -70%);
+}
+
+/* === Charts === */
+.chart {
+    -fx-background-color: -fx-background-secondary;
+    -fx-border-color: -fx-background-tertiary;
+    -fx-border-radius: -fx-border-radius-standard;
+    -fx-background-radius: -fx-border-radius-standard;
+}
+
+.chart-title {
+    -fx-text-fill: -fx-text-primary;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.chart-legend {
+    -fx-background-color: -fx-background-secondary;
+    -fx-text-fill: -fx-text-primary;
+}
+
+.chart-pie-label {
+    -fx-fill: -fx-text-primary;
+}
+
+.axis {
+    -fx-tick-label-fill: -fx-text-primary;
+}
+
+.axis-label {
+    -fx-text-fill: -fx-text-primary;
+}
+
+/* === Panels and Containers === */
+.panel {
+    -fx-background-color: -fx-background-secondary;
+    -fx-background-radius: -fx-border-radius-standard;
+    -fx-padding: 20px;
+    -fx-spacing: 10px;
+}
+
+.content-area {
+    -fx-background-color: -fx-background-primary;
+    -fx-padding: 20px;
+}
+
+.sidebar {
+    -fx-background-color: -fx-background-secondary;
+    -fx-padding: 10px;
+    -fx-spacing: 10px;
+}
+
+/* === Status Indicators === */
+.status-success {
+    -fx-text-fill: -fx-success-green;
+    -fx-font-weight: bold;
+}
+
+.status-fraud {
+    -fx-text-fill: -fx-fraud-red;
+    -fx-font-weight: bold;
+}
+
+.status-warning {
+    -fx-text-fill: -fx-warning-yellow;
+    -fx-font-weight: bold;
+}
+
+/* === Feedback Flash Animation === */
+.fraud-flash {
+    -fx-background-color: -fx-fraud-red;
+    -fx-effect: dropshadow(gaussian, -fx-fraud-red, 20, 0.7, 0, 0);
+}
+
+/* === Progress Indicator === */
+.progress-indicator {
+    -fx-progress-color: -fx-accent-blue;
+}
+
+/* === Scroll Bar === */
+.scroll-bar .track {
+    -fx-background-color: -fx-background-secondary;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: -fx-background-tertiary;
+    -fx-background-radius: -fx-border-radius-standard;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: derive(-fx-background-tertiary, 20%);
+}
+
+/* === Separator === */
+.separator {
+    -fx-background-color: -fx-background-tertiary;
+}
+
+/* === Tooltip === */
+.tooltip {
+    -fx-background-color: -fx-background-tertiary;
+    -fx-text-fill: -fx-text-primary;
+    -fx-background-radius: -fx-border-radius-standard;
+    -fx-padding: 5px 10px;
+}

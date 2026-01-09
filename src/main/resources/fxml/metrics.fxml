@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="io.github.michaelcommitsat3am.transactionfraudcomp.gui.controller.MetricsController"
+      spacing="20" styleClass="content-area">
+    
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    
+    <!-- Title -->
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <Label text="System Metrics &amp; Performance" styleClass="label-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label fx:id="refreshLabel" text="Auto-refresh: ON" styleClass="label-secondary"/>
+    </HBox>
+    
+    <!-- Performance Metrics -->
+    <HBox spacing="20">
+        <VBox spacing="10" styleClass="panel" HBox.hgrow="ALWAYS">
+            <Label text="Performance" styleClass="label-subtitle"/>
+            <HBox spacing="10">
+                <Label text="⏱️ Avg Time:"/>
+                <Label fx:id="avgTimeLabel" text="0 ms" styleClass="label-secondary"/>
+            </HBox>
+        </VBox>
+        
+        <VBox spacing="10" styleClass="panel" HBox.hgrow="ALWAYS">
+            <Label text="Database" styleClass="label-subtitle"/>
+            <HBox spacing="10">
+                <Label text="💾 Status:"/>
+                <Label fx:id="dbStatusLabel" text="Unknown" styleClass="label-secondary"/>
+            </HBox>
+        </VBox>
+        
+        <VBox spacing="10" styleClass="panel" HBox.hgrow="ALWAYS">
+            <Label text="Cache (Redis)" styleClass="label-subtitle"/>
+            <HBox spacing="10">
+                <Label text="🔄 Status:"/>
+                <Label fx:id="cacheStatusLabel" text="Unknown" styleClass="label-secondary"/>
+            </HBox>
+        </VBox>
+    </HBox>
+    
+    <!-- Charts -->
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+        <!-- Transaction Status Pie Chart -->
+        <VBox spacing="10" styleClass="panel" HBox.hgrow="ALWAYS">
+            <Label text="Transaction Distribution" styleClass="label-subtitle"/>
+            <PieChart fx:id="statusPieChart" legendVisible="true" 
+                     VBox.vgrow="ALWAYS" minHeight="300"/>
+        </VBox>
+        
+        <!-- Fraud Rule Hits Bar Chart -->
+        <VBox spacing="10" styleClass="panel" HBox.hgrow="ALWAYS">
+            <Label text="Fraud Rule Hits" styleClass="label-subtitle"/>
+            <BarChart fx:id="fraudRuleBarChart" legendVisible="false" 
+                     VBox.vgrow="ALWAYS" minHeight="300">
+                <xAxis>
+                    <CategoryAxis side="BOTTOM"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis side="LEFT" label="Count"/>
+                </yAxis>
+            </BarChart>
+        </VBox>
+    </HBox>
+    
+    <!-- Transaction Counts -->
+    <HBox spacing="20">
+        <VBox spacing="5" styleClass="panel" HBox.hgrow="ALWAYS">
+            <Label text="✅ Success" styleClass="status-success"/>
+            <Label fx:id="successCountLabel" text="0" styleClass="label-title"/>
+        </VBox>
+        
+        <VBox spacing="5" styleClass="panel" HBox.hgrow="ALWAYS">
+            <Label text="⚠️ Declined" styleClass="status-warning"/>
+            <Label fx:id="declinedCountLabel" text="0" styleClass="label-title"/>
+        </VBox>
+        
+        <VBox spacing="5" styleClass="panel" HBox.hgrow="ALWAYS">
+            <Label text="🚨 Fraud Detected" styleClass="status-fraud"/>
+            <Label fx:id="fraudCountLabel" text="0" styleClass="label-title"/>
+        </VBox>
+    </HBox>
+    
+</VBox>

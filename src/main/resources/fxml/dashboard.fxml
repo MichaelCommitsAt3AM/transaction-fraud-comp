@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="io.github.michaelcommitsat3am.transactionfraudcomp.gui.controller.DashboardController"
+      spacing="20" styleClass="content-area">
+    
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+    
+    <!-- Title -->
+    <Label text="Transaction Simulation Dashboard" styleClass="label-title"/>
+    
+    <!-- Mode Selector -->
+    <VBox spacing="10" styleClass="panel">
+        <Label text="Application Mode" styleClass="label-subtitle"/>
+        <HBox spacing="15">
+            <ToggleButton fx:id="atmModeToggle" text="🏧 ATM Mode" styleClass="toggle-button"/>
+            <ToggleButton fx:id="bankingModeToggle" text="🏦 Banking App Mode" styleClass="toggle-button" selected="true"/>
+        </HBox>
+        <Label fx:id="modeDescriptionLabel" text="Banking mode with higher limits and advanced fraud detection" 
+               styleClass="label-secondary" wrapText="true"/>
+    </VBox>
+    
+    <!-- User Simulation Controls -->
+    <VBox spacing="10" styleClass="panel">
+        <Label text="User &amp; Device Information" styleClass="label-subtitle"/>
+        
+        <GridPane hgap="15" vgap="10">
+            <Label text="User ID:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+            <TextField fx:id="userIdField" promptText="e.g., user_alice_001" 
+                      GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="250"/>
+            
+            <Label text="Device ID:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+            <TextField fx:id="deviceIdField" promptText="e.g., device_mobile_01" 
+                      GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="250"/>
+            
+            <Label text="IP Address:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+            <TextField fx:id="ipAddressField" promptText="e.g., 192.168.1.100" 
+                      GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="250"/>
+        </GridPane>
+    </VBox>
+    
+    <!-- Geolocation Controls -->
+    <VBox spacing="10" styleClass="panel">
+        <Label text="Geolocation" styleClass="label-subtitle"/>
+        
+        <HBox spacing="20">
+            <!-- Latitude -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Latitude"/>
+                <HBox spacing="10">
+                    <Slider fx:id="latitudeSlider" min="-90" max="90" value="40.7128" 
+                           showTickLabels="true" showTickMarks="true" majorTickUnit="30" 
+                           prefWidth="300"/>
+                    <Label fx:id="latitudeLabel" text="40.71" minWidth="50"/>
+                </HBox>
+            </VBox>
+            
+            <!-- Longitude -->
+            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <Label text="Longitude"/>
+                <HBox spacing="10">
+                    <Slider fx:id="longitudeSlider" min="-180" max="180" value="-74.0060" 
+                           showTickLabels="true" showTickMarks="true" majorTickUnit="60" 
+                           prefWidth="300"/>
+                    <Label fx:id="longitudeLabel" text="-74.01" minWidth="50"/>
+                </HBox>
+            </VBox>
+        </HBox>
+        
+        <!-- Quick Location Buttons -->
+        <HBox spacing="10">
+            <Label text="Quick Locations:"/>
+            <Button text="🗽 New York" onAction="#setNewYorkLocation"/>
+            <Button text="🌉 London" onAction="#setLondonLocation"/>
+            <Button text="🌆 Tokyo" onAction="#setTokyoLocation"/>
+        </HBox>
+    </VBox>
+    
+    <!-- Transaction Controls -->
+    <VBox spacing="10" styleClass="panel">
+        <Label text="Transaction" styleClass="label-subtitle"/>
+        
+        <HBox spacing="15" alignment="CENTER_LEFT">
+            <Label text="Amount ($):"/>
+            <TextField fx:id="amountField" promptText="Enter amount" prefWidth="150"/>
+            
+            <Button fx:id="depositBtn" text="💰 Deposit" styleClass="button-success" 
+                   onAction="#handleDeposit"/>
+            
+            <Button fx:id="withdrawBtn" text="💸 Withdraw" styleClass="button" 
+                   onAction="#handleWithdraw"/>
+        </HBox>
+    </VBox>
+    
+    <!-- Live Feedback -->
+    <VBox fx:id="feedbackPanel" spacing="10" styleClass="panel" minHeight="120">
+        <Label text="Live Feedback" styleClass="label-subtitle"/>
+        <Label fx:id="feedbackLabel" text="Ready to process transactions..." 
+               styleClass="label-secondary" wrapText="true"/>
+        <Label fx:id="balanceLabel" text="Current Balance: Loading..." 
+               styleClass="label-secondary"/>
+        <ProgressIndicator fx:id="progressIndicator" visible="false" maxWidth="30" maxHeight="30"/>
+    </VBox>
+    
+</VBox>
